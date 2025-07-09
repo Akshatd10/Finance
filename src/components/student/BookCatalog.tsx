@@ -9,6 +9,8 @@ const BookCatalog = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [sortBy, setSortBy] = useState('title');
+  const [reservedBooks, setReservedBooks] = useState<string[]>([]);
+
 
   const filteredAndSortedBooks = books
     .filter(book => {
@@ -33,11 +35,14 @@ const BookCatalog = () => {
       }
     });
 
-  const handleReserveBook = (bookId: string) => {
-    if (user) {
-      reserveBook(bookId, user.id, 7); // Reserve for 7 days
-    }
-  };
+    const handleReserveBook = (bookId: string) => {
+      if (user && !reservedBooks.includes(bookId)) {
+        reserveBook(bookId, user.id, 7); // Reserve for 7 days
+        alert('Book reserved!');
+        setReservedBooks(prev => [...prev, bookId]); // Mark book as reserved
+      }
+    };
+    
 
   return (
     <div className="space-y-6">
@@ -135,23 +140,24 @@ const BookCatalog = () => {
 
             {/* Action Button */}
             <button
-              onClick={() => handleReserveBook(book.id)}
-              disabled={book.availableCopies === 0}
-              className={`w-full py-3 rounded-xl font-medium transition-all duration-200 ${
-                book.availableCopies > 0
-                  ? 'bg-gradient-to-r from-emerald-500 to-blue-500 text-white hover:from-emerald-600 hover:to-blue-600 transform hover:scale-105'
-                  : 'bg-gray-600 text-gray-400 cursor-not-allowed'
-              }`}
-            >
-              {book.availableCopies > 0 ? (
-                <span className="flex items-center justify-center">
-                  <Calendar className="h-4 w-4 mr-2" />
-                  Reserve Book
-                </span>
-              ) : (
-                'Currently Unavailable'
-              )}
-            </button>
+  onClick={() => handleReserveBook(book.id)}
+  disabled={book.availableCopies === 0 || reservedBooks.includes(book.id)}
+  className={`w-full py-3 rounded-xl font-medium transition-all duration-200 ${
+    book.availableCopies > 0 && !reservedBooks.includes(book.id)
+      ? 'bg-gradient-to-r from-emerald-500 to-blue-500 text-white hover:from-emerald-600 hover:to-blue-600 transform hover:scale-105'
+      : 'bg-gray-600 text-gray-400 cursor-not-allowed'
+  }`}
+>
+  {book.availableCopies > 0 && !reservedBooks.includes(book.id) ? (
+    <span className="flex items-center justify-center">
+      <Calendar className="h-4 w-4 mr-2" />
+      Reserve Book
+    </span>
+  ) : (
+    'Already Reserved'
+  )}
+</button>
+
           </div>
         ))}
       </div>

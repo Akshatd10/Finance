@@ -14,9 +14,11 @@ const BookRequests = () => {
     priority: 'medium' as const,
     estimatedCost: ''
   });
+  const [showSharedView, setShowSharedView] = useState<null | string>(null);
+
 
   // Mock data for demonstration
-  const requests = [
+  const [requests, setRequests] = useState([
     {
       id: '1',
       title: 'Machine Learning with Python',
@@ -40,7 +42,9 @@ const BookRequests = () => {
       supportCount: 8,
       reason: 'Growing interest in blockchain technology among students'
     }
-  ];
+  ]);
+  
+  
 
   const handleSubmitRequest = (e: React.FormEvent) => {
     e.preventDefault();
@@ -203,13 +207,24 @@ const BookRequests = () => {
                 </div>
 
                 {request.status === 'pending' && (
-                  <div className="flex space-x-2">
-                    <button className="flex items-center px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-200">
-                      <Users className="h-4 w-4 mr-2" />
-                      Share Request
-                    </button>
-                  </div>
-                )}
+                <div className="flex items-center space">
+
+                  {/* Share Button */}
+                  <button
+                    onClick={() => {
+                      const link = `${window.location.origin}/book-request/${request.id}`;
+                      navigator.clipboard.writeText(link);
+                      setShowSharedView(request.id); // simulate opening shared view
+                    }}
+                    className="flex items-center px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-200"
+                  >
+                    <Users className="h-4 w-4 mr-2" />
+                    Share Request ({request.supportCount})
+                  </button>
+
+                </div>
+              )}
+
               </div>
             </div>
           ))
@@ -357,6 +372,44 @@ const BookRequests = () => {
           </div>
         </div>
       )}
+
+{showSharedView && (
+  <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-6">
+    <div className="bg-slate-800 rounded-2xl p-6 w-full max-w-xl text-white relative">
+      <button
+        onClick={() => setShowSharedView(null)}
+        className="absolute top-2 right-2 text-gray-400 hover:text-white"
+      >
+        ✕
+      </button>
+
+      {requests
+        .filter((r) => r.id === showSharedView)
+        .map((request) => (
+          <div key={request.id}>
+            <h2 className="text-2xl font-bold mb-2">{request.title}</h2>
+            <p className="text-gray-300 mb-2">Author: {request.author}</p>
+            <p className="text-sm text-gray-400 mb-4">Supporters: {request.supportCount}</p>
+
+            <button
+              onClick={() => {
+                const updatedRequests = [...requests];
+                const index = updatedRequests.findIndex((r) => r.id === request.id);
+                if (index !== -1) {
+                  updatedRequests[index].supportCount += 1;
+                  setRequests(updatedRequests);
+                }
+              }}
+              className="px-6 py-3 bg-green-500 hover:bg-green-600 rounded-xl text-white font-medium"
+            >
+              Support Request
+            </button>
+          </div>
+        ))}
+    </div>
+  </div>
+)}
+
     </div>
   );
 };

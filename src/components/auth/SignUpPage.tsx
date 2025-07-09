@@ -329,13 +329,14 @@ const SignUpPage = () => {
                     className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all duration-200"
                     disabled={isLoading}
                   >
-                    <option value="">Select Department</option>
-                    <option value="Computer Science">Computer Science</option>
-                    <option value="Finance Management">Finance Management</option>
-                    <option value="Engineering">Engineering</option>
-                    <option value="Business Administration">Business Administration</option>
-                    <option value="Other">Other</option>
+                    <option value="" style={{ color: 'black' }}>Select Department</option>
+                    <option value="Computer Science" style={{ color: 'black' }}>Computer Science</option>
+                    <option value="Finance Management" style={{ color: 'black' }}>Finance Management</option>
+                    <option value="Engineering" style={{ color: 'black' }}>Engineering</option>
+                    <option value="Business Administration" style={{ color: 'black' }}>Business Administration</option>
+                    <option value="Other" style={{ color: 'black' }}>Other</option>
                   </select>
+
                 </div>
               </div>
             )}
